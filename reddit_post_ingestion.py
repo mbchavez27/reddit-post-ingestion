@@ -7,20 +7,20 @@
 # ]
 # ///
 """
-Reddit Scraper
-==============
-Searches a subreddit by keyword and exports all matching posts
-and their comments to a CSV file.
+Reddit Post Ingestion
+=================
+Extracts structured post data (URL, title, date, author, content)
+from subreddit searches into clean CSV datasets.
 
 Credentials are loaded from a .env file (see .env.example).
 Search parameters are entered interactively at runtime.
 
 Run with uv (no manual install needed):
-    uv run reddit_scraper.py
+    uv run reddit_post_ingestion.py
 
 Or traditionally:
     pip install praw pandas python-dotenv
-    python reddit_scraper.py
+    python reddit_post_ingestion.py
 """
 
 import time
@@ -45,7 +45,7 @@ if not all([CLIENT_ID, CLIENT_SECRET, USER_AGENT]):
     print("   Create a .env file in the same folder as this script with:")
     print("     REDDIT_CLIENT_ID=your_client_id")
     print("     REDDIT_CLIENT_SECRET=your_client_secret")
-    print("     REDDIT_USER_AGENT=reddit_scraper/1.0 by your_username")
+    print("     REDDIT_USER_AGENT=reddit_post_ingestion/1.0 by your_username")
     print()
     print("   See .env.example for reference.")
     sys.exit(1)
@@ -58,7 +58,7 @@ VALID_SORT = {"relevance", "top", "comments", "new", "hot"}
 
 print()
 print("=" * 50)
-print("       Reddit Subreddit Scraper 🔍")
+print("       Reddit Post Ingestion 🔍")
 print("=" * 50)
 print()
 

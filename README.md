@@ -69,7 +69,7 @@ reddit_dlsu_thesis_top10_posts.csv
 
 ```
 your-folder/
-├── reddit_scraper.py   <- the script
+├── reddit_post_ingestion.py   <- the script
 ├── .env                <- your credentials (you create this, never commit it)
 ├── .env.example        <- safe template to show what .env should look like
 ├── .gitignore          <- keeps .env and CSVs out of Git
@@ -95,12 +95,12 @@ your-folder/
 
 ### Step 2 — Create your `.env` file
 
-In the same folder as `reddit_scraper.py`, create a file named exactly `.env` (no extension) and fill it in:
+In the same folder as `reddit_post_ingestion.py`, create a file named exactly `.env` (no extension) and fill it in:
 
 ```env
 REDDIT_CLIENT_ID=paste_your_client_id_here
 REDDIT_CLIENT_SECRET=paste_your_client_secret_here
-REDDIT_USER_AGENT=reddit_scraper/1.0 by your_reddit_username
+REDDIT_USER_AGENT=reddit_post_ingestion/1.0 by your_reddit_username
 ```
 
 You can use `.env.example` as a starting point — just copy it and rename it to `.env`.
@@ -126,7 +126,7 @@ powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | ie
 ### With `uv` (recommended — no virtual env or pip needed)
 
 ```bash
-uv run reddit_scraper.py
+uv run reddit_post_ingestion.py
 ```
 
 `uv` reads the dependencies declared at the top of the script and installs them automatically in an isolated environment. Nothing else needed.
@@ -135,7 +135,7 @@ uv run reddit_scraper.py
 
 ```bash
 pip install praw pandas python-dotenv
-python reddit_scraper.py
+python reddit_post_ingestion.py
 ```
 
 ---
