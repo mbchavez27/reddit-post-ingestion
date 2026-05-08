@@ -1,8 +1,8 @@
-# Reddit Subreddit Scraper 🔍
+# Reddit Subreddit Scraper
 
-A Python script that searches a subreddit by keyword and exports all matching **posts and their comments** to a CSV file — ready for data analysis, sentiment analysis, or research.
+A Python script that searches a subreddit by keyword and exports all matching **posts and their comments** to a CSV file -- ready for data analysis, sentiment analysis, or research.
 
-Originally written in R using `RedditExtractoR`, this version uses Python + [PRAW](https://praw.readthedocs.io/) (the official Reddit API wrapper). It is completely **free to use** and works within Reddit's standard API rate limits.
+This version uses Python + [PRAW](https://praw.readthedocs.io/) (the Reddit API wrapper). It is completely **free to use** and works within Reddit's standard API rate limits.
 
 When you run the script, it will **ask you what to search for** — no need to edit any code. Your Reddit API credentials are stored safely in a `.env` file that never gets committed to Git.
 
@@ -21,24 +21,24 @@ When you run the script, it will **ask you what to search for** — no need to e
 
 ```
 ==================================================
-       Reddit Subreddit Scraper 🔍
+       Reddit Subreddit Scraper
 ==================================================
 
-🔑 Enter search keyword (e.g. graduation): thesis
-📌 Enter subreddit name without r/ (e.g. dlsu): dlsu
+Enter search keyword (e.g. graduation): thesis
+Enter subreddit name without r/ (e.g. dlsu): dlsu
    Sort options: comments, hot, new, relevance, top
-📊 Sort results by (default: relevance): top
-🔢 Number of posts to collect (default: 5, max recommended: 50): 10
+Sort results by (default: relevance): top
+Number of posts to collect (default: 5, max recommended: 50): 10
 
-▶️  Searching r/dlsu for 'thesis' | sort: top | limit: 10
+Searching r/dlsu for 'thesis' | sort: top | limit: 10
 
    Found 10 post(s).
 
-🔄 Processing post 1/10: https://www.reddit.com/r/dlsu/...
-   ✅ 24 row(s) (1 post + 23 comments)
+Processing post 1/10: https://www.reddit.com/r/dlsu/...
+   24 row(s) (1 post + 23 comments)
 ...
 
-✅ Done! 187 total rows exported to:
+Done! 187 total rows exported to:
    /your/path/reddit_dlsu_thesis_top10_posts.csv
 ```
 
@@ -68,11 +68,11 @@ reddit_dlsu_thesis_top10_posts.csv
 ## Project Files
 
 ```
-📁 your-folder/
-├── reddit_scraper.py   ← the script
-├── .env                ← your credentials (you create this, never commit it)
-├── .env.example        ← safe template to show what .env should look like
-├── .gitignore          ← keeps .env and CSVs out of Git
+your-folder/
+├── reddit_scraper.py   <- the script
+├── .env                <- your credentials (you create this, never commit it)
+├── .env.example        <- safe template to show what .env should look like
+├── .gitignore          <- keeps .env and CSVs out of Git
 └── README.md
 ```
 
@@ -105,7 +105,7 @@ REDDIT_USER_AGENT=reddit_scraper/1.0 by your_reddit_username
 
 You can use `.env.example` as a starting point — just copy it and rename it to `.env`.
 
-> ⚠️ Never share your `.env` file or commit it to Git. The `.gitignore` in this project already excludes it.
+Never share your `.env` file or commit it to Git. The `.gitignore` in this project already excludes it.
 
 ### Step 3 — Install `uv` (if you don't have it)
 
@@ -161,9 +161,9 @@ The script includes a **2-second delay** between each post request. This is inte
 
 | Problem | Fix |
 |---|---|
-| `❌ Missing Reddit credentials` | Your `.env` file is missing or has wrong variable names. Check it matches `.env.example` exactly. |
-| `received 401 HTTP response` | Your `client_id` or `client_secret` is incorrect. Re-copy them from Reddit. |
-| `❌ No threads found` | Try a different keyword or sort option. The subreddit may have no posts matching that term. |
+| Missing Reddit credentials | Your `.env` file is missing or has wrong variable names. Check it matches `.env.example` exactly. |
+| received 401 HTTP response | Your `client_id` or `client_secret` is incorrect. Re-copy them from Reddit. |
+| No threads found | Try a different keyword or sort option. The subreddit may have no posts matching that term. |
 | CSV opens garbled in Excel | Open Excel → Data → From Text/CSV → select UTF-8 encoding. The script uses `utf-8-sig` which Excel should detect automatically. |
 | Script exits immediately | Make sure you're running from the same folder as your `.env` file. |
 
