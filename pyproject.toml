@@ -1,0 +1,9 @@
+[project]
+name = "reddit-post-ingestion"
+version = "0.1.0"
+description = "Scrape Reddit post comments via public JSON endpoints — no API key required"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "requests>=2.34.2",
+]
