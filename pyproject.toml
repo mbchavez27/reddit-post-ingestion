@@ -1,9 +1,19 @@
 [project]
 name = "reddit-post-ingestion"
-version = "0.1.0"
-description = "Scrape Reddit post comments via public JSON endpoints — no API key required"
+version = "0.2.0"
+description = "Scrape Reddit posts and comments to CSV with full metadata"
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "requests>=2.34.2",
 ]
+
+[project.scripts]
+reddit-ingest = "reddit_comments_ingestion:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["."]
