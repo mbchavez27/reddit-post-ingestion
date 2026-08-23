@@ -3,7 +3,7 @@ Reddit Post & Comment Ingestion
 ================================
 
 Scrapes posts and comments from a subreddit using Reddit's OAuth API,
-exporting everything to a single CSV file with full metadata.
+exporting per-post CSVs into a user-named folder with full metadata.
 
 Uses Reddit's Android app public client ID — no app registration needed.
 
@@ -19,9 +19,11 @@ Usage
 import csv
 import json
 import os
+import re
 import time
 import uuid
 from datetime import datetime, timezone
+from pathlib import Path
 
 import requests
 
@@ -61,6 +63,13 @@ def prompt_yes_no(prompt: str, default: bool = False) -> bool:
     if not user_input:
         return default
     return user_input in ("y", "yes")
+
+
+def sanitize_filename(title: str) -> str:
+    name = title.lower()
+    name = re.sub(r"[^a-z0-9\s_-]", "", name)
+    name = re.sub(r"[\s]+", "_", name).strip("_")
+    return name[:50] if name else "untitled"
 
 
 def utc_to_iso(utc_seconds: float | None) -> str:
@@ -268,8 +277,8 @@ def main():
 
     keyword = prompt_default("Enter keyword to filter by (leave empty for no filter)", "")
 
-    output_default = f"output/{subreddit}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-    output_file = prompt_default("Output file", output_default)
+    folder_name = prompt_default("Output folder name", f"{subreddit}_batch")
+    output_dir = Path("output") / folder_name
 
     print("━" * 50 + "\n")
 
@@ -280,10 +289,12 @@ def main():
         print(f"  Keyword:   {keyword}")
     print()
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     client = RedditClient()
 
     print("Fetching posts...")
-    all_rows = []
+    total_posts = 0
+    total_comments = 0
 
     for i, post_data in enumerate(scrape_subreddit(client, subreddit, limit=limit, sort=sort), 1):
         post_id = post_data.get("id")
@@ -296,23 +307,27 @@ def main():
             continue
 
         post_row = format_post_row(post_data)
-        all_rows.append(post_row)
         print(f"  [{i}/{limit}] Post: {title[:60]}...")
 
         print(f"         Fetching comments...")
         _, comment_data_list, author_lookup = scrape_comments(client, subreddit, post_id)
+        comment_rows = []
         for c in comment_data_list:
             if not keyword or keyword.lower() in c.get("body", "").lower():
-                all_rows.append(format_comment_row(c, author_lookup))
-        print(f"         {len(comment_data_list)} comment(s) collected.")
+                comment_rows.append(format_comment_row(c, author_lookup))
+
+        filename = f"{post_id}_{sanitize_filename(title)}.csv"
+        post_csv = output_dir / filename
+        save_to_csv([post_row] + comment_rows, str(post_csv))
+
+        total_posts += 1
+        total_comments += len(comment_rows)
         time.sleep(1.5)
 
-    print(f"\nTotal rows: {len(all_rows)} (posts + comments)")
-
-    os.makedirs("output", exist_ok=True)
-    print(f"Saving to {output_file}...")
-    save_to_csv(all_rows, output_file)
-    print("\nDone!")
+    print("\n" + "━" * 50)
+    print(f"Done! {total_posts} posts, {total_comments} comments")
+    print(f"Output: {output_dir}/")
+    print("━" * 50)
 
 
 if __name__ == "__main__":

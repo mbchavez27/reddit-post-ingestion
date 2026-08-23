@@ -36,13 +36,22 @@ Enter subreddit name (without r/): UAAP
 Number of posts to fetch [25]:
 Sort order (hot/new/rising/top) [hot]:
 Enter keyword to filter by (leave empty for no filter): UAAP
-Output file [output/UAAP_20260823_123456.csv]:
+Output folder name [UAAP_batch]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Subreddit: r/UAAP
   Sort:      hot
   Limit:     25 posts
   Keyword:   UAAP
+```
+
+Each post is saved as a separate CSV inside the folder:
+
+```
+output/UAAP_batch/
+├── abc123_megathread_uaap_season_87.csv
+├── def456_uaap_highlights_thread.csv
+└── ghi789_random_basketball_question.csv
 ```
 
 ---
@@ -124,7 +133,7 @@ Enter subreddit name (without r/): UAAP
 Number of posts to fetch [25]: 50
 Sort order (hot/new/rising/top) [hot]:
 Enter keyword to filter by (leave empty for no filter): UAAP
-Output file [output/UAAP_20260821_074038.csv]:
+Output folder name [UAAP_batch]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Subreddit: r/UAAP
@@ -136,17 +145,16 @@ OAuth authenticated successfully.
 Fetching posts...
   [1/50] Post: MEGATHREAD: UAAP Season 87...
          Fetching comments...
-         42 comment(s) collected.
+         Saved 43 rows to output/UAAP_batch/abc123_megathread_uaap_season_87.csv
   [2/50] (filtered) Post: Random basketball question...
   [3/50] Post: UAAP highlights thread...
          Fetching comments...
-         18 comment(s) collected.
+         Saved 19 rows to output/UAAP_batch/def456_uaap_highlights_thread.csv
 
-Total rows: 61 (posts + comments)
-Saving to output/UAAP_20260821_074038.csv...
-Saved 61 rows to output/UAAP_20260821_074038.csv
-
-Done!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Done! 2 posts, 61 comments
+Output: output/UAAP_batch/
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ---
