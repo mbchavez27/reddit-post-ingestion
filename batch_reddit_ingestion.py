@@ -261,10 +261,9 @@ def main():
                 continue
 
             title = post_data.get("title", "")
-            selftext = post_data.get("selftext", "")
-            text_matches = not keyword or keyword.lower() in title.lower() or keyword.lower() in selftext.lower()
+            title_matches = not keyword or keyword.lower() in title.lower()
 
-            if not text_matches:
+            if not title_matches:
                 print(f"  (filtered) Post: {title[:60]}...")
                 continue
 

@@ -186,7 +186,7 @@ reddit-post-ingestion/
 
 The tool supports case-insensitive keyword filtering across posts and comments:
 
-- **Posts**: filtered by title and selftext before fetching comments (saves API calls)
+- **Posts**: filtered by title before fetching comments (saves API calls)
 - **Comments**: filtered by body text after fetching
 - Leave the keyword prompt empty to fetch everything (no filter)
 
