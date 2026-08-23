@@ -158,6 +158,9 @@ venv.bak/
 # Scraper output
 output/
 
+# Batch link files
+*.txt
+
 # Spyder project settings
 .spyderproject
 .spyproject

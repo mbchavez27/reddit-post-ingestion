@@ -49,11 +49,18 @@ Output file [output/UAAP_20260823_123456.csv]:
 
 ## Batch Ingestion
 
-For fetching multiple posts from a CSV of Reddit URLs:
+For fetching multiple posts from a CSV or TXT file of Reddit URLs:
 
 ```bash
 uv run python batch_reddit_ingestion.py
 ```
+
+### Supported input formats
+
+| Format | Description |
+|---|---|
+| `.csv` | Auto-detects URL column (`url`, `link`, `reddit_url`, `post_url`, `post_link`) or scans all cells |
+| `.txt` | One URL per line, `#` comments supported |
 
 ### Supported URL formats
 
@@ -66,7 +73,7 @@ uv run python batch_reddit_ingestion.py
 ```
 Reddit Batch Ingestion Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Enter path to CSV file: posts.csv
+Enter path to CSV or TXT file: posts.txt
 Enter column name (or press Enter to auto-detect):
 Enter keyword to filter by (leave empty for no filter):
 Output mode (all/per) [all]:
@@ -80,8 +87,6 @@ Output file [output/batch_20260823_123456.csv]:
 |---|---|
 | `all` | All posts + comments merged into a single CSV |
 | `per` | One CSV per post in a user-named folder (e.g. `output/my_batch/abc123.csv`) |
-
-The tool auto-detects the URL column (`url`, `link`, `reddit_url`, `post_url`, `post_link`) or scans all cells for Reddit links.
 
 ---
 

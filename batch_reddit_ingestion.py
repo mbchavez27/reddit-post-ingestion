@@ -2,8 +2,11 @@
 Reddit Batch Post & Comment Ingestion
 ======================================
 
-Reads a CSV of Reddit post URLs, fetches each post and its comments,
-and exports to CSV — either merged or per-post.
+Reads a CSV or TXT file of Reddit post URLs, fetches each post and its
+comments, and exports to CSV — either merged or per-post.
+
+CSV: auto-detects URL column (url, link, reddit_url, post_url, post_link).
+TXT: one URL per line, # comments supported.
 
 Reuses the OAuth client and scraping logic from reddit_comments_ingestion.py.
 
@@ -70,12 +73,40 @@ def extract_reddit_post_id(url: str) -> tuple[str, str] | None:
     return None
 
 
-def load_urls_from_csv(path: Path, column_hint: str | None = None) -> list[str]:
-    """Read a CSV and extract Reddit post URLs, auto-detecting the column."""
+def load_urls_from_file(path: Path, column_hint: str | None = None) -> list[str]:
+    """Read a CSV or TXT file and extract Reddit post URLs."""
     if not path.exists():
         print(f"Error: File not found: {path}")
         sys.exit(1)
 
+    if path.suffix.lower() == ".txt":
+        return _load_urls_from_txt(path)
+
+    return _load_urls_from_csv(path, column_hint)
+
+
+def _load_urls_from_txt(path: Path) -> list[str]:
+    """Read a TXT file with one URL per line."""
+    urls: list[str] = []
+    seen: set[str] = set()
+    with path.open("r", encoding="utf-8") as f:
+        for line in f:
+            val = line.strip()
+            if not val or val.startswith("#"):
+                continue
+            if val not in seen:
+                seen.add(val)
+                urls.append(val)
+
+    if not urls:
+        print("Error: No URLs found in TXT file")
+        sys.exit(1)
+
+    return urls
+
+
+def _load_urls_from_csv(path: Path, column_hint: str | None = None) -> list[str]:
+    """Read a CSV file and extract Reddit post URLs, auto-detecting the column."""
     with path.open("r", encoding="utf-8", newline="") as handle:
         header_line: str | None = None
         while True:
@@ -160,7 +191,7 @@ def main():
     print("Reddit Batch Ingestion Tool")
     print("━" * 50)
 
-    csv_input = input("Enter path to CSV file: ").strip()
+    csv_input = input("Enter path to CSV or TXT file: ").strip()
     csv_path = Path(csv_input).expanduser()
 
     column_hint = input(
@@ -186,8 +217,8 @@ def main():
 
     print("━" * 50 + "\n")
 
-    print("Loading URLs from CSV...")
-    urls = load_urls_from_csv(csv_path, column_hint)
+    print("Loading URLs from file...")
+    urls = load_urls_from_file(csv_path, column_hint)
     print(f"Found {len(urls)} unique post URL(s)")
     if keyword:
         print(f"Keyword filter: {keyword}")
