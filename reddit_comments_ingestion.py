@@ -9,15 +9,13 @@ Uses Reddit's Android app public client ID — no app registration needed.
 
 Setup
 -----
-    uv add requests
+    uv sync
 
 Usage
 -----
-    uv run reddit_comments_ingestion.py --subreddit UAAP --limit 25
-    uv run reddit_comments_ingestion.py --subreddit UAAP --limit 50 --sort new
+    uv run python reddit_comments_ingestion.py
 """
 
-import argparse
 import csv
 import json
 import os
@@ -50,6 +48,19 @@ FIELDNAMES = [
 
 ANDROID_CLIENT_ID = "ohXpoqrZYub1kg"
 USER_AGENT = "android:com.reddit.frontpage:v2024.45.0 (by /u/research-bot)"
+
+
+def prompt_default(prompt: str, default: str) -> str:
+    user_input = input(f"{prompt} [{default}]: ").strip()
+    return default if not user_input else user_input
+
+
+def prompt_yes_no(prompt: str, default: bool = False) -> bool:
+    default_str = "Y" if default else "N"
+    user_input = input(f"{prompt} [{default_str}]: ").strip().lower()
+    if not user_input:
+        return default
+    return user_input in ("y", "yes")
 
 
 def utc_to_iso(utc_seconds: float | None) -> str:
@@ -237,32 +248,32 @@ def save_to_csv(rows: list[dict], filename: str):
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Scrape Reddit posts and comments to CSV"
-    )
-    parser.add_argument(
-        "--subreddit", required=True, help="Subreddit name (without r/)"
-    )
-    parser.add_argument(
-        "--limit", type=int, default=25, help="Number of posts to scrape (default: 25)"
-    )
-    parser.add_argument(
-        "--sort",
-        choices=["hot", "new", "rising", "top"],
-        default="hot",
-        help="Sort order (default: hot)",
-    )
-    parser.add_argument(
-        "--output", default=None, help="Output CSV path (default: output/{subreddit}_{timestamp}.csv)"
-    )
-    args = parser.parse_args()
+    print("Reddit Post Ingestion Tool")
+    print("━" * 50)
 
-    print("=" * 50)
-    print("       Reddit Post & Comment Ingestion")
-    print("=" * 50)
-    print(f"  Subreddit: r/{args.subreddit}")
-    print(f"  Sort:      {args.sort}")
-    print(f"  Limit:     {args.limit} posts")
+    subreddit = input("Enter subreddit name (without r/): ").strip()
+    if not subreddit:
+        print("Error: Subreddit name is required")
+        return
+
+    try:
+        limit = int(prompt_default("Number of posts to fetch", "25"))
+    except ValueError:
+        limit = 25
+
+    sort = prompt_default("Sort order (hot/new/rising/top)", "hot")
+    if sort not in ("hot", "new", "rising", "top"):
+        print(f"Invalid sort '{sort}', defaulting to hot")
+        sort = "hot"
+
+    output_default = f"output/{subreddit}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    output_file = prompt_default("Output file", output_default)
+
+    print("━" * 50 + "\n")
+
+    print(f"  Subreddit: r/{subreddit}")
+    print(f"  Sort:      {sort}")
+    print(f"  Limit:     {limit} posts")
     print()
 
     client = RedditClient()
@@ -270,14 +281,14 @@ def main():
     print("Fetching posts...")
     all_rows = []
 
-    for i, post_data in enumerate(scrape_subreddit(client, args.subreddit, limit=args.limit, sort=args.sort), 1):
+    for i, post_data in enumerate(scrape_subreddit(client, subreddit, limit=limit, sort=sort), 1):
         post_id = post_data.get("id")
         post_row = format_post_row(post_data)
         all_rows.append(post_row)
-        print(f"  [{i}/{args.limit}] Post: {post_data.get('title', '')[:60]}...")
+        print(f"  [{i}/{limit}] Post: {post_data.get('title', '')[:60]}...")
 
         print(f"         Fetching comments...")
-        _, comment_data_list, author_lookup = scrape_comments(client, args.subreddit, post_id)
+        _, comment_data_list, author_lookup = scrape_comments(client, subreddit, post_id)
         for c in comment_data_list:
             all_rows.append(format_comment_row(c, author_lookup))
         print(f"         {len(comment_data_list)} comment(s) collected.")
@@ -286,12 +297,6 @@ def main():
     print(f"\nTotal rows: {len(all_rows)} (posts + comments)")
 
     os.makedirs("output", exist_ok=True)
-    if args.output:
-        output_file = args.output
-    else:
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_file = f"output/{args.subreddit}_{timestamp}.csv"
-
     print(f"Saving to {output_file}...")
     save_to_csv(all_rows, output_file)
     print("\nDone!")

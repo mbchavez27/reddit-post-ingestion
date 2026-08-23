@@ -24,32 +24,24 @@ That's it. `uv sync` installs Python and all dependencies automatically.
 ## Usage
 
 ```bash
-# Basic — scrape 25 hot posts from r/UAAP
-uv run reddit-ingest --subreddit UAAP
-
-# Custom limit and sort
-uv run reddit-ingest --subreddit UAAP --limit 50 --sort new
-
-# Custom output path
-uv run reddit-ingest --subreddit UAAP --limit 10 --output my_data.csv
+uv run python reddit_comments_ingestion.py
 ```
 
-Or run the script directly:
+The tool runs interactively — it will prompt you for all options:
 
-```bash
-uv run reddit_comments_ingestion.py --subreddit UAAP --limit 25
 ```
+Reddit Post Ingestion Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Enter subreddit name (without r/): UAAP
+Number of posts to fetch [25]:
+Sort order (hot/new/rising/top) [hot]:
+Output file [output/UAAP_20260823_123456.csv]:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----
-
-## CLI Arguments
-
-| Argument | Default | Description |
-|---|---|---|
-| `--subreddit` | *(required)* | Subreddit name without `r/` |
-| `--limit` | `25` | Number of posts to scrape |
-| `--sort` | `hot` | Sort order: `hot`, `new`, `rising`, `top` |
-| `--output` | `output/{subreddit}_{timestamp}.csv` | Output CSV path |
+  Subreddit: r/UAAP
+  Sort:      hot
+  Limit:     25 posts
+```
 
 ---
 
@@ -81,9 +73,14 @@ uv run reddit_comments_ingestion.py --subreddit UAAP --limit 25
 ## Example Output
 
 ```
-==================================================
-       Reddit Post & Comment Ingestion
-==================================================
+Reddit Post Ingestion Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Enter subreddit name (without r/): UAAP
+Number of posts to fetch [25]: 1
+Sort order (hot/new/rising/top) [hot]:
+Output file [output/UAAP_20260821_074038.csv]:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
   Subreddit: r/UAAP
   Sort:      hot
   Limit:     1 posts
@@ -148,4 +145,4 @@ The script includes a **1.5-second delay** between requests to avoid rate limits
 |---|---|
 | [`requests`](https://docs.python-requests.org/) | HTTP requests to Reddit's API |
 
-Only one external dependency. Everything else is Python stdlib (`csv`, `json`, `os`, `time`, `uuid`, `argparse`).
+Only one external dependency. Everything else is Python stdlib (`csv`, `json`, `os`, `time`, `uuid`).
