@@ -299,10 +299,11 @@ def main():
     for i, post_data in enumerate(scrape_subreddit(client, subreddit, limit=limit, sort=sort), 1):
         post_id = post_data.get("id")
         title = post_data.get("title", "")
+        selftext = post_data.get("selftext", "")
 
-        title_matches = not keyword or keyword.lower() in title.lower()
+        text_matches = not keyword or keyword.lower() in title.lower() or keyword.lower() in selftext.lower()
 
-        if not title_matches:
+        if not text_matches:
             print(f"  [{i}/{limit}] (filtered) Post: {title[:60]}...")
             continue
 
