@@ -198,7 +198,11 @@ def main():
         "Enter column name (or press Enter to auto-detect): "
     ).strip() or None
 
-    keyword = prompt_default("Enter keyword to filter by (leave empty for no filter)", "")
+    keyword = prompt_default("Required keywords (comma-separated, leave empty for none)", "")
+    optional_input = prompt_default("Optional keywords (comma-separated, leave empty for none)", "")
+
+    required = [k.strip().lower() for k in keyword.split(",") if k.strip()]
+    optional = [k.strip().lower() for k in optional_input.split(",") if k.strip()]
 
     output_mode = prompt_default("Output mode (all/per)", "all")
     if output_mode not in ("all", "per"):
@@ -220,8 +224,10 @@ def main():
     print("Loading URLs from file...")
     urls = load_urls_from_file(csv_path, column_hint)
     print(f"Found {len(urls)} unique post URL(s)")
-    if keyword:
-        print(f"Keyword filter: {keyword}")
+    if required:
+        print(f"Required: {', '.join(required)}")
+    if optional:
+        print(f"Optional: {', '.join(optional)}")
     print()
 
     if output_folder:
@@ -261,17 +267,17 @@ def main():
                 continue
 
             title = post_data.get("title", "")
-            title_matches = not keyword or keyword.lower() in title.lower()
+            title_lower = title.lower()
+            has_all_required = all(kw in title_lower for kw in required)
+            has_any_optional = not optional or any(kw in title_lower for kw in optional)
+            title_matches = (not required and not optional) or (has_all_required and has_any_optional)
 
             if not title_matches:
                 print(f"  (filtered) Post: {title[:60]}...")
                 continue
 
             post_row = format_post_row(post_data)
-            post_comments = []
-            for c in comment_data_list:
-                if not keyword or keyword.lower() in c.get("body", "").lower():
-                    post_comments.append(format_comment_row(c, author_lookup))
+            post_comments = [format_comment_row(c, author_lookup) for c in comment_data_list]
 
             print(f"  Post: {title[:60]}...")
             print(f"  {len(post_comments)} comment(s) collected.")

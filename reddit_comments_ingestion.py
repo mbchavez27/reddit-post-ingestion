@@ -275,7 +275,11 @@ def main():
         print(f"Invalid sort '{sort}', defaulting to hot")
         sort = "hot"
 
-    keyword = prompt_default("Enter keyword to filter by (leave empty for no filter)", "")
+    required_input = prompt_default("Required keywords (comma-separated, leave empty for none)", "")
+    optional_input = prompt_default("Optional keywords (comma-separated, leave empty for none)", "")
+
+    required = [k.strip().lower() for k in required_input.split(",") if k.strip()]
+    optional = [k.strip().lower() for k in optional_input.split(",") if k.strip()]
 
     folder_name = prompt_default("Output folder name", f"{subreddit}_batch")
     output_dir = Path("output") / folder_name
@@ -285,8 +289,10 @@ def main():
     print(f"  Subreddit: r/{subreddit}")
     print(f"  Sort:      {sort}")
     print(f"  Limit:     {limit} posts")
-    if keyword:
-        print(f"  Keyword:   {keyword}")
+    if required:
+        print(f"  Required:  {', '.join(required)}")
+    if optional:
+        print(f"  Optional:  {', '.join(optional)}")
     print()
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -299,8 +305,11 @@ def main():
     for i, post_data in enumerate(scrape_subreddit(client, subreddit, limit=limit, sort=sort), 1):
         post_id = post_data.get("id")
         title = post_data.get("title", "")
+        title_lower = title.lower()
 
-        title_matches = not keyword or keyword.lower() in title.lower()
+        has_all_required = all(kw in title_lower for kw in required)
+        has_any_optional = not optional or any(kw in title_lower for kw in optional)
+        title_matches = (not required and not optional) or (has_all_required and has_any_optional)
 
         if not title_matches:
             print(f"  [{i}/{limit}] (filtered) Post: {title[:60]}...")
@@ -311,10 +320,7 @@ def main():
 
         print(f"         Fetching comments...")
         _, comment_data_list, author_lookup = scrape_comments(client, subreddit, post_id)
-        comment_rows = []
-        for c in comment_data_list:
-            if not keyword or keyword.lower() in c.get("body", "").lower():
-                comment_rows.append(format_comment_row(c, author_lookup))
+        comment_rows = [format_comment_row(c, author_lookup) for c in comment_data_list]
 
         filename = f"{post_id}_{sanitize_filename(title)}.csv"
         post_csv = output_dir / filename

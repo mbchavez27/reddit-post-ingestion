@@ -32,18 +32,29 @@ The tool runs interactively — it will prompt you for all options:
 ```
 Reddit Post Ingestion Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Enter subreddit name (without r/): UAAP
+Enter subreddit name (without r/): Philippines
 Number of posts to fetch [25]:
 Sort order (hot/new/rising/top) [hot]:
-Enter keyword to filter by (leave empty for no filter): UAAP
-Output folder name [UAAP_batch]:
+Required keywords (comma-separated, leave empty for none): rene
+Optional keywords (comma-separated, leave empty for none): autopsy, ateneo
+Output folder name [Philippines_batch]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Subreddit: r/UAAP
+  Subreddit: r/Philippines
   Sort:      hot
   Limit:     25 posts
-  Keyword:   UAAP
+  Required:  rene
+  Optional:  autopsy, ateneo
 ```
+
+Matching rule: **ALL required keywords AND at least 1 optional** (if any) must appear in the post title.
+
+| Required | Optional | Post title | Match? |
+|---|---|---|---|
+| `rene` | `autopsy, ateneo` | "Rene Baterbonia autopsy results" | ✅ |
+| `rene` | `autopsy, ateneo` | "Ateneo fan reacts to Rene incident" | ✅ |
+| `rene` | `autopsy, ateneo` | "General autopsy procedures" | ❌ no rene |
+| `rene` | `autopsy, ateneo` | "Ateneo wins UAAP" | ❌ no rene |
 
 Each post is saved as a separate CSV inside the folder:
 
@@ -84,7 +95,8 @@ Reddit Batch Ingestion Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Enter path to CSV or TXT file: posts.txt
 Enter column name (or press Enter to auto-detect):
-Enter keyword to filter by (leave empty for no filter):
+Required keywords (comma-separated, leave empty for none): rene
+Optional keywords (comma-separated, leave empty for none): autopsy, ateneo
 Output mode (all/per) [all]:
 Output file [output/batch_20260823_123456.csv]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -129,31 +141,33 @@ Output file [output/batch_20260823_123456.csv]:
 ```
 Reddit Post Ingestion Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Enter subreddit name (without r/): UAAP
+Enter subreddit name (without r/): Philippines
 Number of posts to fetch [25]: 50
 Sort order (hot/new/rising/top) [hot]:
-Enter keyword to filter by (leave empty for no filter): UAAP
-Output folder name [UAAP_batch]:
+Required keywords (comma-separated, leave empty for none): rene
+Optional keywords (comma-separated, leave empty for none): autopsy, ateneo
+Output folder name [Philippines_batch]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-  Subreddit: r/UAAP
+  Subreddit: r/Philippines
   Sort:      hot
   Limit:     50 posts
-  Keyword:   UAAP
+  Required:  rene
+  Optional:  autopsy, ateneo
 
 OAuth authenticated successfully.
 Fetching posts...
-  [1/50] Post: MEGATHREAD: UAAP Season 87...
+  [1/50] Post: "MEATHREAD: Divine Adili and Rene Baterbonia..."
          Fetching comments...
-         Saved 43 rows to output/UAAP_batch/abc123_megathread_uaap_season_87.csv
-  [2/50] (filtered) Post: Random basketball question...
-  [3/50] Post: UAAP highlights thread...
+         Saved 129 rows to output/Philippines_batch/abc123_meathread_divine_adili.csv
+  [2/50] (filtered) Post: "Ateneo wins UAAP..."
+  [3/50] Post: "Rene spotted at Ateneo campus..."
          Fetching comments...
-         Saved 19 rows to output/UAAP_batch/def456_uaap_highlights_thread.csv
+         Saved 45 rows to output/Philippines_batch/def456_rene_spotted_ateneo.csv
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Done! 2 posts, 61 comments
-Output: output/UAAP_batch/
+Done! 8 posts, 312 comments
+Output: output/Philippines_batch/
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -184,11 +198,13 @@ reddit-post-ingestion/
 
 ## Keyword Filtering
 
-The tool supports case-insensitive keyword filtering across posts and comments:
+The tool supports required + optional keyword matching on post titles:
 
-- **Posts**: filtered by title before fetching comments (saves API calls)
-- **Comments**: filtered by body text after fetching
-- Leave the keyword prompt empty to fetch everything (no filter)
+- **Required keywords**: ALL must appear in the post title
+- **Optional keywords**: at least 1 must appear (if any are provided)
+- Posts that don't match are skipped entirely (saves API calls)
+- All comments for matching posts are included (no comment filtering)
+- Leave both prompts empty to fetch everything (no filter)
 
 ---
 
