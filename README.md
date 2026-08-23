@@ -47,6 +47,44 @@ Output file [output/UAAP_20260823_123456.csv]:
 
 ---
 
+## Batch Ingestion
+
+For fetching multiple posts from a CSV of Reddit URLs:
+
+```bash
+uv run python batch_reddit_ingestion.py
+```
+
+### Supported URL formats
+
+- `https://www.reddit.com/r/SUBREDDIT/comments/POST_ID/slug/`
+- `https://www.reddit.com/comments/POST_ID`
+- Raw post IDs
+
+### Interactive prompts
+
+```
+Reddit Batch Ingestion Tool
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Enter path to CSV file: posts.csv
+Enter column name (or press Enter to auto-detect):
+Enter keyword to filter by (leave empty for no filter):
+Output mode (all/per) [all]:
+Output file [output/batch_20260823_123456.csv]:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
+
+### Output modes
+
+| Mode | Description |
+|---|---|
+| `all` | All posts + comments merged into a single CSV |
+| `per` | One CSV per post in a user-named folder (e.g. `output/my_batch/abc123.csv`) |
+
+The tool auto-detects the URL column (`url`, `link`, `reddit_url`, `post_url`, `post_link`) or scans all cells for Reddit links.
+
+---
+
 ## Output CSV Format
 
 | Column | Description |
@@ -112,7 +150,8 @@ Done!
 
 ```
 reddit-post-ingestion/
-├── reddit_comments_ingestion.py   <- scraper source
+├── reddit_comments_ingestion.py   <- single-subreddit scraper
+├── batch_reddit_ingestion.py      <- CSV-driven batch scraper
 ├── pyproject.toml                 <- project metadata + dependencies
 ├── .gitignore                     <- ignores output/ and caches
 ├── uv.lock                        <- locked dependency versions
