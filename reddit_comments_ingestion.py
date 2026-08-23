@@ -266,6 +266,8 @@ def main():
         print(f"Invalid sort '{sort}', defaulting to hot")
         sort = "hot"
 
+    keyword = prompt_default("Enter keyword to filter by (leave empty for no filter)", "")
+
     output_default = f"output/{subreddit}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
     output_file = prompt_default("Output file", output_default)
 
@@ -274,6 +276,8 @@ def main():
     print(f"  Subreddit: r/{subreddit}")
     print(f"  Sort:      {sort}")
     print(f"  Limit:     {limit} posts")
+    if keyword:
+        print(f"  Keyword:   {keyword}")
     print()
 
     client = RedditClient()
@@ -283,14 +287,23 @@ def main():
 
     for i, post_data in enumerate(scrape_subreddit(client, subreddit, limit=limit, sort=sort), 1):
         post_id = post_data.get("id")
+        title = post_data.get("title", "")
+
+        title_matches = not keyword or keyword.lower() in title.lower()
+
+        if not title_matches:
+            print(f"  [{i}/{limit}] (filtered) Post: {title[:60]}...")
+            continue
+
         post_row = format_post_row(post_data)
         all_rows.append(post_row)
-        print(f"  [{i}/{limit}] Post: {post_data.get('title', '')[:60]}...")
+        print(f"  [{i}/{limit}] Post: {title[:60]}...")
 
         print(f"         Fetching comments...")
         _, comment_data_list, author_lookup = scrape_comments(client, subreddit, post_id)
         for c in comment_data_list:
-            all_rows.append(format_comment_row(c, author_lookup))
+            if not keyword or keyword.lower() in c.get("body", "").lower():
+                all_rows.append(format_comment_row(c, author_lookup))
         print(f"         {len(comment_data_list)} comment(s) collected.")
         time.sleep(1.5)
 

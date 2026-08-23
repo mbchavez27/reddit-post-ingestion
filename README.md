@@ -35,12 +35,14 @@ Reddit Post Ingestion Tool
 Enter subreddit name (without r/): UAAP
 Number of posts to fetch [25]:
 Sort order (hot/new/rising/top) [hot]:
+Enter keyword to filter by (leave empty for no filter): UAAP
 Output file [output/UAAP_20260823_123456.csv]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Subreddit: r/UAAP
   Sort:      hot
   Limit:     25 posts
+  Keyword:   UAAP
 ```
 
 ---
@@ -76,24 +78,30 @@ Output file [output/UAAP_20260823_123456.csv]:
 Reddit Post Ingestion Tool
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Enter subreddit name (without r/): UAAP
-Number of posts to fetch [25]: 1
+Number of posts to fetch [25]: 50
 Sort order (hot/new/rising/top) [hot]:
+Enter keyword to filter by (leave empty for no filter): UAAP
 Output file [output/UAAP_20260821_074038.csv]:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   Subreddit: r/UAAP
   Sort:      hot
-  Limit:     1 posts
+  Limit:     50 posts
+  Keyword:   UAAP
 
 OAuth authenticated successfully.
 Fetching posts...
-  [1/1] Post: MEGATHREAD: Divine Adili and Rene Baterbonia...
+  [1/50] Post: MEGATHREAD: UAAP Season 87...
          Fetching comments...
-         128 comment(s) collected.
+         42 comment(s) collected.
+  [2/50] (filtered) Post: Random basketball question...
+  [3/50] Post: UAAP highlights thread...
+         Fetching comments...
+         18 comment(s) collected.
 
-Total rows: 129 (posts + comments)
+Total rows: 61 (posts + comments)
 Saving to output/UAAP_20260821_074038.csv...
-Saved 129 rows to output/UAAP_20260821_074038.csv
+Saved 61 rows to output/UAAP_20260821_074038.csv
 
 Done!
 ```
@@ -119,6 +127,16 @@ reddit-post-ingestion/
 2. Fetches posts from the subreddit using Reddit's API
 3. For each post, recursively fetches all comments (including nested replies)
 4. Exports posts + comments to a single CSV with full metadata
+
+---
+
+## Keyword Filtering
+
+The tool supports case-insensitive keyword filtering across posts and comments:
+
+- **Posts**: filtered by title before fetching comments (saves API calls)
+- **Comments**: filtered by body text after fetching
+- Leave the keyword prompt empty to fetch everything (no filter)
 
 ---
 
